@@ -28,8 +28,10 @@ def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
     """Simply print the message that arrived."""
     if msg_id != old_msg_id:
         print(msg)
-        print(channel_id)
-        rc_handler.handle_message(msg)
+        if msg == "":
+            rc_handler.handle_vmessage()
+        else:
+            rc_handler.handle_message(msg)
         old_msg_id = msg_id
 
 

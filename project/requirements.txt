@@ -2,7 +2,7 @@ fastapi==0.85.0
 uvicorn==0.20.0
 regex==2022.3.2
 rocketchat_API==1.30.0
-requests==2.25.1
+requests==2.26.0
 pydantic==1.9.2
 SQLAlchemy==1.4.41
 alembic==1.8.1
@@ -11,5 +11,5 @@ rocketchat-async==1.1.0
 flower==1.2.0
 redis==3.5.3
 celery==5.2.2
-
-
+SpeechRecognition==3.10.0
+pydub==0.25.1

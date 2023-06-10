@@ -13,5 +13,9 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y ffmpeg;
+
 # copy project
 COPY . .

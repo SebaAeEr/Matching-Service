@@ -66,15 +66,6 @@ def add_feedback(
     rule: schemas.RulesBase,
     db: Session = Depends(get_db),
 ):
-    with sessions.Session() as session:
-        rocket = RocketChat(
-            "ge49qag",
-            "!Tumonline!135",
-            server_url="https://chat.tum.de",
-            session=session,
-        )
-        subs = rocket.subscriptions_get_one(room_id="LgmTbH5bjaxDkdtGF")
-        pprint(subs.json())
     return crud.add_Message(message, rule, db)
 
 

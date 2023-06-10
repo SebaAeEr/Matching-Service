@@ -17,8 +17,6 @@ services:
 
   worker:
     build: ./project
-    # command: celery --app=worker.celery worker -B -P threads  --loglevel=info --logfile=logs/celery.log
-    # command: celery --app=worker.celery worker --loglevel=info --logfile=logs/celery.log
     command: celery -A worker worker --loglevel=info --logfile=logs/celery.log
     volumes:
       - ./project:/usr/src/app
