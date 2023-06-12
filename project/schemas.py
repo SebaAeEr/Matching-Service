@@ -17,7 +17,7 @@ class Messages(MessageBase):
 
 
 class RulesBase(BaseModel):
-    medium: str
+    exclusiv: bool
     listen_to: str
     message_type: str
 

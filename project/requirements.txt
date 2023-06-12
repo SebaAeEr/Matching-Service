@@ -13,3 +13,4 @@ redis==3.5.3
 celery==5.2.2
 SpeechRecognition==3.10.0
 pydub==0.25.1
+fuzzywuzzy==0.18.0

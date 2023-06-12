@@ -29,8 +29,8 @@ class Messages(Base):
 class Rules(Base):
     __tablename__ = "rules"
     id = Column(Integer, primary_key=True)
-    medium = Column(String)
     listen_to = Column(String)
     message_type = Column(String)
+    exclusiv = Column(Boolean)
 
     messages = relationship("Messages", cascade="all, delete", back_populates="rule")

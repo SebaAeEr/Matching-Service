@@ -7,6 +7,7 @@ from rocketchat_API.rocketchat import RocketChat as rc_api
 import datetime
 import speech_recognition as sr
 from pydub import AudioSegment
+import fuzzywuzzy as fw
 
 
 def get_db():
@@ -60,8 +61,12 @@ def handle_vmessage():
                     # listen for the data (load audio to memory)
                     audio_data = r.record(source)
                     # recognize (convert from speech to text)
-                    text = r.recognize_google(audio_data, language="de-DE")
-                    handle_message(text)
+                    text = r.recognize_google(audio_data, language="en-GB")
+                    message = crud.get_vmessage(text, SessionLocal())
+                    if message != None:
+                        rocket.chat_post_message(
+                            message, channel="CorrelatorTest"
+                        ).json()
             except:
                 rocket.chat_post_message(
                     "Ich konnte dich nicht verstehen :(. Bitte wiederhole deine Anfrage!",
