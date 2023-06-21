@@ -3,6 +3,8 @@ version: '3.8'
 services:
 
   web:
+    env_file:
+      - key.env
     build: ./project
     ports:
       - 8004:8000
@@ -16,6 +18,8 @@ services:
       - redis
 
   worker:
+    env_file:
+      - key.env
     build: ./project
     command: celery -A worker worker --loglevel=info --logfile=logs/celery.log
     volumes:

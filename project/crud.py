@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 from typing import List
-from fuzzywuzzy import fuzz
 from sqlalchemy import or_, and_, not_, literal
 
 
@@ -94,13 +93,13 @@ def get_vmessage(phrase: str, db: Session):
 
     found_rules = []
 
-    for rule in rules:
-        if rule.exclusiv:
-            if fuzz.ratio(rule.listen_to.lower(), phrase.lower()) > 90:
-                found_rules.append(rule)
-        else:
-            if fuzz.partial_ratio(rule.listen_to.lower(), phrase.lower()) > 90:
-                found_rules.append(rule)
+    # for rule in rules:
+    #     if rule.exclusiv:
+    #         if fuzz.ratio(rule.listen_to.lower(), phrase.lower()) > 90:
+    #             found_rules.append(rule)
+    #     else:
+    #         if fuzz.partial_ratio(rule.listen_to.lower(), phrase.lower()) > 90:
+    #             found_rules.append(rule)
     print(found_rules)
 
     if len(found_rules) == 0:

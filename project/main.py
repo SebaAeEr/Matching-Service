@@ -34,7 +34,6 @@ def get_db():
 @correlator.on_event("startup")
 async def run_task():
     task = start_listen.delay()
-    print("task id:", task.id)
 
 
 # with sessions.Session() as session:

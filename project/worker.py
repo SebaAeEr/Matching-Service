@@ -10,6 +10,8 @@ import random
 from rocketchat_async import RocketChat
 import rc_handler
 
+import whisper
+
 
 celery = Celery("worker")
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
@@ -21,15 +23,16 @@ celery.conf.timezone = "Europe/Amsterdam"
 
 rc = RocketChat()
 old_msg_id = ""
+model = whisper.load_model("medium.en", download_root="./")
 
 
 def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
-    global rc, old_msg_id
+    global rc, old_msg_id, model
     """Simply print the message that arrived."""
     if msg_id != old_msg_id:
         print(msg)
         if msg == "":
-            rc_handler.handle_vmessage()
+            rc_handler.handle_vmessage(msg_id, model)
         else:
             rc_handler.handle_message(msg)
         old_msg_id = msg_id
@@ -56,5 +59,10 @@ async def listen(address, username, password):
 
 @celery.task(name="start_listen")
 def start_listen():
-    print("asdf")
-    asyncio.run(listen("wss://chat.tum.de/websocket", "ge49qag", "!Tumonline!135"))
+    asyncio.run(
+        listen(
+            "wss://" + os.environ["RC_SERVER_URL"] + "/websocket",
+            os.environ["RC_NAME"],
+            os.environ["RC_PASSWORD"],
+        )
+    )
