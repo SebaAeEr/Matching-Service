@@ -83,6 +83,19 @@ def handle_vmessage(msg_id, model):
             #     ).json()
 
 
+def ask_again(message):
+    with sessions.Session() as session:
+        rocket = rc_api(
+            os.environ["RC_NAME"],
+            os.environ["RC_PASSWORD"],
+            server_url="https://" + os.environ["RC_SERVER_URL"],
+            session=session,
+        )
+        rocket.chat_post_message(
+            'Did you mean: "' + message + '"?', channel="CorrelatorTest"
+        ).json()
+
+
 # with sessions.Session() as session:
 #     rocket = rc_api(
 #         "ge49qag",

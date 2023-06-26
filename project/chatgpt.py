@@ -41,9 +41,8 @@ def embedding_chatgpt(
     )["data"][0]["embedding"]
 
     dist = np.linalg.norm(np.array(embedding1) - np.array(embedding2))
-    print(dist)
     return dist <= threshold
 
 
-ask_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")
-embedding_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")
+# ask_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")
+# embedding_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")

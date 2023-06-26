@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "D:\\uni_new\\uni\\4.Master\\Prak\\RCCorrelator\\project\\rc_handler.py",
+            "program": "D:\\uni_new\\uni\\4.Master\\Prak\\RCCorrelator\\project\\string_dist.py",
             "console": "integratedTerminal",
             "justMyCode": false
         }

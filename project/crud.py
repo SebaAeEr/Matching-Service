@@ -6,6 +6,10 @@ import models
 import schemas
 from typing import List
 from sqlalchemy import or_, and_, not_, literal
+from tokenization import tokenize
+from string_dist import lex_dist
+from chatgpt import embedding_chatgpt, ask_chatgpt
+from rc_handler import ask_again
 
 
 def add_Message(message: schemas.MessageBase, rule: schemas.RulesBase, db: Session):
@@ -88,31 +92,64 @@ def get_vmessage(phrase: str, db: Session):
         )
         .all()
     )
-    print("message: ", phrase)
-    print(rules)
-
-    found_rules = []
-
-    # for rule in rules:
-    #     if rule.exclusiv:
-    #         if fuzz.ratio(rule.listen_to.lower(), phrase.lower()) > 90:
-    #             found_rules.append(rule)
-    #     else:
-    #         if fuzz.partial_ratio(rule.listen_to.lower(), phrase.lower()) > 90:
-    #             found_rules.append(rule)
-    print(found_rules)
+    found_rules = match_msg_rule(phrase, rules)
+    print(map(lambda rule: rule.listen_to, found_rules))
 
     if len(found_rules) == 0:
         return None
     elif len(found_rules) > 1:
         message = "Multiple matches found. What did you mean: "
         for rule in found_rules:
-            message += '\n"' + rule.message + '"'
+            message += (
+                '\n"'
+                + (
+                    db.query(models.Messages)
+                    .filter(models.Messages.rule_id == rule.id)
+                    .first()
+                    .message
+                )
+                + '"'
+            )
         return message
     else:
-        message = (
-            db.query(models.Messages).filter(models.Messages.rule_id == rule.id).first()
-        )
+        message = find_message_for_rule(found_rules[0], db)
         if message == None:
             return None
         return message.message
+
+
+def match_msg_rule(msg: str, rules):
+    str_white = tokenize(msg)
+    found_rules = []
+    for rule in rules:
+        exact_matches, res = lex_dist(str_white, rule.listen_to)
+        if res:
+            if not exact_matches:
+                ask_again(rule.listen_to)
+            else:
+                found_rules.append(rule)
+    if len(found_rules) == 0:
+        for rule in rules:
+            exact_matches, res = lex_dist(msg, rule.listen_to)
+            if res:
+                if not exact_matches:
+                    ask_again(rule.listen_to)
+                else:
+                    found_rules.append(rule)
+    # if len(found_rules) == 0:
+    #     for rule in rules:
+    #         if embedding_chatgpt(msg, rule.listen_to):
+    #             found_rules.append(rule)
+    # if len(found_rules) == 0:
+    #     for rule in rules:
+    #         if ask_chatgpt(msg, rule.listen_to):
+    #             found_rules.append(rule)
+
+    return found_rules
+
+
+def find_message_for_rule(rule, db: Session):
+    message = (
+        db.query(models.Messages).filter(models.Messages.rule_id == rule.id).first()
+    )
+    return message

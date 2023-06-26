@@ -8,6 +8,7 @@ from celery.schedules import crontab
 import asyncio
 import random
 from rocketchat_async import RocketChat
+
 import rc_handler
 
 import whisper
@@ -23,7 +24,6 @@ celery.conf.timezone = "Europe/Amsterdam"
 
 rc = RocketChat()
 old_msg_id = ""
-model = whisper.load_model("medium.en", download_root="./")
 
 
 def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
@@ -57,8 +57,20 @@ async def listen(address, username, password):
             print("Reconnecting...")
 
 
+# asyncio.run(
+#     listen(
+#         "wss://chat.tum.de/websocket",
+#         "ge49qag",
+#         "!Tumonline!135",
+#     )
+# )
+
+
 @celery.task(name="start_listen")
 def start_listen():
+    global model
+    # model = whisper.load_model("medium.en", download_root="./")
+    model = whisper.load_model("base.en")
     asyncio.run(
         listen(
             "wss://" + os.environ["RC_SERVER_URL"] + "/websocket",

@@ -12,7 +12,8 @@ import schemas
 import models
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
-from worker import start_listen
+import whisper
+from listener import Listener
 
 
 correlator = FastAPI(docs_url="/ad_doc", redoc_url="/ad_redoc")
@@ -33,7 +34,8 @@ def get_db():
 
 @correlator.on_event("startup")
 async def run_task():
-    task = start_listen.delay()
+    listener = Listener(1)
+    listener.start()
 
 
 # with sessions.Session() as session:
