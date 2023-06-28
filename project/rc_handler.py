@@ -21,9 +21,9 @@ def handle_message(chat: str):
     if message != None:
         with sessions.Session() as session:
             rocket = RocketChat(
-                os.environ["RC_NAME"],
-                os.environ["RC_PASSWORD"],
-                server_url="https://" + os.environ["RC_SERVER_URL"],
+                os.getenv("RC_NAME", "ge49qag"),
+                os.getenv("RC_PASSWORD", "!Tumonline!135"),
+                server_url="https://" + os.getenv("RC_SERVER_URL", "chat.tum.de"),
                 session=session,
             )
             rocket.chat_post_message(message, channel="CorrelatorTest").json()
@@ -32,9 +32,9 @@ def handle_message(chat: str):
 def handle_vmessage(msg_id, model):
     with sessions.Session() as session:
         rocket = rc_api(
-            os.environ["RC_NAME"],
-            os.environ["RC_PASSWORD"],
-            server_url="https://" + os.environ["RC_SERVER_URL"],
+            os.getenv("RC_NAME", "ge49qag"),
+            os.getenv("RC_PASSWORD", "!Tumonline!135"),
+            server_url="https://" + os.getenv("RC_SERVER_URL", "chat.tum.de"),
             session=session,
         )
         files = rocket.channels_files(
@@ -46,24 +46,22 @@ def handle_vmessage(msg_id, model):
         diff = now - datetime.datetime.fromisoformat(file["uploadedAt"][0:-1])
 
         if diff < datetime.timedelta(0, 3):
-            print("HI")
             urls = file["url"].replace("https://chat.tum.de", "").split("/")
             api_path = "/".join(urls[0:-1]) + "/"
             method = urls[-1]
             r = rocket.call_api_get(method, api_path)
             open("currentVM.mp3", "wb").write(r.content)
-            print("HI")
             result = model.transcribe("currentVM.mp3")
-            print(result["text"])
-            message = crud.get_vmessage(result["text"], SessionLocal())
-            if message != None:
-                rocket.chat_post_message(message, channel="CorrelatorTest").json()
+            return result["text"]
+            # message = crud.get_vmessage(result["text"], SessionLocal())
+            # if message != None:
+            #     rocket.chat_post_message(message, channel="CorrelatorTest").json()
 
-            rocket.call_api_post(
-                "chat.delete",
-                kwargs={"roomId": "LgmTbH5bjaxDkdtGF", "msgId": str(msg_id)},
-                use_json=True,
-            )
+            # rocket.call_api_post(
+            #     "chat.delete",
+            #     kwargs={"roomId": "LgmTbH5bjaxDkdtGF", "msgId": str(msg_id)},
+            #     use_json=True,
+            # )
             # r = sr.Recognizer()
             # try:
             #     with sr.AudioFile("currentVM.wav") as source:
@@ -86,9 +84,9 @@ def handle_vmessage(msg_id, model):
 def ask_again(message):
     with sessions.Session() as session:
         rocket = rc_api(
-            os.environ["RC_NAME"],
-            os.environ["RC_PASSWORD"],
-            server_url="https://" + os.environ["RC_SERVER_URL"],
+            os.getenv("RC_NAME", "ge49qag"),
+            os.getenv("RC_PASSWORD", "!Tumonline!135"),
+            server_url="https://" + os.getenv("RC_SERVER_URL", "chat.tum.de"),
             session=session,
         )
         rocket.chat_post_message(

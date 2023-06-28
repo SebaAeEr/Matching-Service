@@ -13,6 +13,9 @@ import rc_handler
 
 import whisper
 import threading
+import main
+import requests
+import json
 
 
 class Listener(threading.Thread):
@@ -28,12 +31,17 @@ class Listener(threading.Thread):
     def handle_message(self, channel_id, sender_id, msg_id, thread_id, msg, qualifier):
         """Simply print the message that arrived."""
         if msg_id != self.old_msg_id:
-            print(msg)
             if msg == "":
-                rc_handler.handle_vmessage(msg_id, self.model)
-            else:
-                rc_handler.handle_message(msg)
+                msg = rc_handler.handle_vmessage(msg_id, self.model)
+            print(msg)
             self.old_msg_id = msg_id
+            self.send_messages(msg, msg_id)
+
+    def send_messages(self, msg: str, msg_id):
+        print("url:" + main.callback_message)
+        payload = json.dumps({"message": msg, "id": msg_id})
+        headers = {"Content-Type": "application/json"}
+        requests.request("PUT", main.callback_message, headers=headers, data=payload)
 
     async def listen(self, address, username, password):
         while True:
@@ -57,8 +65,8 @@ class Listener(threading.Thread):
     def run(self):
         asyncio.run(
             self.listen(
-                "wss://" + os.environ["RC_SERVER_URL"] + "/websocket",
-                os.environ["RC_NAME"],
-                os.environ["RC_PASSWORD"],
+                "wss://" + os.getenv("RC_SERVER_URL", "chat.tum.de") + "/websocket",
+                os.getenv("RC_NAME", "ge49qag"),
+                os.getenv("RC_PASSWORD", "!Tumonline!135"),
             )
         )

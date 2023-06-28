@@ -3,27 +3,16 @@ from pydantic import BaseModel, validator
 import datetime as dt
 
 
-class MessageBase(BaseModel):
-    message: str
-
-
-class Messages(MessageBase):
-    id: int
-    date: dt.datetime
-    rule_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class RulesBase(BaseModel):
-    exclusiv: bool
+class Rule(BaseModel):
     listen_to: str
+    exclusiv: bool
     message_type: str
 
 
-class Rules(MessageBase):
-    id: int
+class MessageBase(BaseModel):
+    id: str
+    message: str
 
-    class Config:
-        orm_mode = True
+
+class MessageMatches(MessageBase):
+    rules: list

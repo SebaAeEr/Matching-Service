@@ -2,6 +2,7 @@ import Levenshtein
 import string
 from enum import Enum
 import jellyfish
+import schemas
 
 
 class Lex_Methods(Enum):
@@ -19,31 +20,57 @@ class Phone_Methods(Enum):
     nysiis = 4
 
 
-def lex_dist(
-    string1: str,
-    string2: str,
+def match_lex_dist(
+    rules,
+    msgs,
     dist_threshold=0.8,
     found_count_threshold=0.7,
     lex_method: Lex_Methods = Lex_Methods.jaro_winkler,
     phone_method: Phone_Methods = Phone_Methods.nysiis,
 ):
-    words1 = string1.translate(str.maketrans("", "", string.punctuation)).split(" ")
-    words2 = string2.translate(str.maketrans("", "", string.punctuation)).split(" ")
+    result_list = []
+    for msg in msgs:
+        found = False
+        d = {}
+        for rule in rules:
+            exact, match = lex_dist(
+                rule.listen_to,
+                msg.message,
+                dist_threshold,
+                found_count_threshold,
+                lex_method,
+                phone_method,
+            )
+            if match:
+                if found:
+                    d["rules"].append(rule)
+                else:
+                    d = msg.dict()
+                    d["rules"] = [rule]
+                    found = True
+        result_list.append(schemas.MessageMatches(**d))
+    return result_list
 
-    short = words1
-    long = words2
-    if len(words1) > len(words2):
-        short = words2
-        long = words1
+
+def lex_dist(
+    rule: str,
+    msg: str,
+    dist_threshold=0.8,
+    found_count_threshold=0.7,
+    lex_method: Lex_Methods = Lex_Methods.jaro_winkler,
+    phone_method: Phone_Methods = Phone_Methods.nysiis,
+):
+    rule = rule.translate(str.maketrans("", "", string.punctuation)).split(" ")
+    msg = msg.translate(str.maketrans("", "", string.punctuation)).split(" ")
 
     found_count = 0
     exact_matches = True
-    for word in short:
+    for word in rule:
         lex_found = sorted(
             list(
                 map(
                     lambda x: compare_lex_string(x, word, lex_method, dist_threshold),
-                    long,
+                    msg,
                 )
             ),
             reverse=True,
@@ -52,7 +79,7 @@ def lex_dist(
             list(
                 map(
                     lambda x: compare_phone_string(x, word, phone_method),
-                    long,
+                    msg,
                 )
             ),
             reverse=True,
@@ -63,7 +90,7 @@ def lex_dist(
         if lex_found[0] != 1:
             exact_matches = False
 
-    return (exact_matches, found_count / len(short) > found_count_threshold)
+    return exact_matches, found_count / len(rule) > found_count_threshold
 
 
 def compare_lex_string(string1, string2, method: Lex_Methods, threshold):
