@@ -11,6 +11,10 @@ import urllib.parse
 import json
 import string_dist
 import schemas
+import re
+import chatgpt
+from enum import Enum
+import matcher as m
 
 
 matcher = FastAPI(docs_url="/ad_doc", redoc_url="/ad_redoc")
@@ -56,7 +60,7 @@ def get_db():
 
 def url_to_dict(body):
     d = {}
-    fields = body[2:-1].split("=")
+    fields = re.split("=|&", body[2:-1])
     counter = 1
     for key in fields[0::2]:
         print(key)
@@ -64,12 +68,6 @@ def url_to_dict(body):
         d[key] = json.loads(urllib.parse.unquote(fields[counter]))
         counter += 2
     return d
-
-
-# @matcher.on_event("startup")
-# async def run_task():
-#     listener = Listener(1)
-#     listener.start()
 
 
 @matcher.post("/add/message")
@@ -97,8 +95,40 @@ async def test(
 
 
 @matcher.get("/run/lex_dist")
-def lex_dist():
-    result = string_dist.match_lex_dist(rules, messages)
-    print(result)
-    clean_rules_msgs(result)
-    return result
+def lex_dist(response: Response, request: Request):
+    global rules, messages
+    response.headers["CPEE-CALLBACK"] = "true"
+    callback = request.headers.get("Cpee-Callback")
+    matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods.lex_dist)
+    matcher.start()
+    return
+
+
+@matcher.get("/run/phone_dist")
+def phone_dist(response: Response, request: Request):
+    global rules, messages
+    response.headers["CPEE-CALLBACK"] = "true"
+    callback = request.headers.get("Cpee-Callback")
+    matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods.phone_dist)
+    matcher.start()
+    return
+
+
+@matcher.get("/run/embedding")
+def embedding(response: Response, request: Request):
+    global rules, messages
+    response.headers["CPEE-CALLBACK"] = "true"
+    callback = request.headers.get("Cpee-Callback")
+    matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods.embedding)
+    matcher.start()
+    return
+
+
+@matcher.get("/run/ask_chatgpt")
+def ask_chatgpt(response: Response, request: Request):
+    global rules, messages
+    response.headers["CPEE-CALLBACK"] = "true"
+    callback = request.headers.get("Cpee-Callback")
+    matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods.ask_chatgpt)
+    matcher.start()
+    return

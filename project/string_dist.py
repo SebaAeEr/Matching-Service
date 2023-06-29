@@ -20,41 +20,10 @@ class Phone_Methods(Enum):
     nysiis = 4
 
 
-def match_lex_dist(
-    rules,
-    msgs,
-    dist_threshold=0.8,
-    found_count_threshold=0.7,
-    lex_method: Lex_Methods = Lex_Methods.jaro_winkler,
-    phone_method: Phone_Methods = Phone_Methods.nysiis,
-):
-    result_list = []
-    for msg in msgs:
-        found = False
-        d = {}
-        for rule in rules:
-            exact, match = lex_dist(
-                rule.listen_to,
-                msg.message,
-                dist_threshold,
-                found_count_threshold,
-                lex_method,
-                phone_method,
-            )
-            if match:
-                if found:
-                    d["rules"].append(rule)
-                else:
-                    d = msg.dict()
-                    d["rules"] = [rule]
-                    found = True
-        result_list.append(schemas.MessageMatches(**d))
-    return result_list
-
-
 def lex_dist(
     rule: str,
     msg: str,
+    phone_dist: False,
     dist_threshold=0.8,
     found_count_threshold=0.7,
     lex_method: Lex_Methods = Lex_Methods.jaro_winkler,
@@ -66,29 +35,38 @@ def lex_dist(
     found_count = 0
     exact_matches = True
     for word in rule:
-        lex_found = sorted(
-            list(
-                map(
-                    lambda x: compare_lex_string(x, word, lex_method, dist_threshold),
-                    msg,
-                )
-            ),
-            reverse=True,
-        )
-        phone_found = sorted(
-            list(
-                map(
-                    lambda x: compare_phone_string(x, word, phone_method),
-                    msg,
-                )
-            ),
-            reverse=True,
-        )
-        if lex_found[0] > 0 or phone_found[0]:
-            found_count += 1
+        if phone_dist:
+            phone_found = sorted(
+                list(
+                    map(
+                        lambda x: compare_phone_string(x, word, phone_method),
+                        msg,
+                    )
+                ),
+                reverse=True,
+            )
+            if phone_found[0]:
+                found_count += 1
 
-        if lex_found[0] != 1:
             exact_matches = False
+        else:
+            lex_found = sorted(
+                list(
+                    map(
+                        lambda x: compare_lex_string(
+                            x, word, lex_method, dist_threshold
+                        ),
+                        msg,
+                    )
+                ),
+                reverse=True,
+            )
+
+            if lex_found[0] > 0:
+                found_count += 1
+
+            if lex_found[0] != 1:
+                exact_matches = False
 
     return exact_matches, found_count / len(rule) > found_count_threshold
 
@@ -164,13 +142,13 @@ def setratio(string1, string2, threshold=0.8):
     )
 
 
-print(
-    lex_dist(
-        "order Mojito",
-        "Hello, my name is Beth Schoon and I want to order a more Mochi.",
-        lex_method=Lex_Methods.jaro_winkler,
-    )
-)
+# print(
+#     lex_dist(
+#         "order Mojito",
+#         "Hello, my name is Beth Schoon and I want to order a more Mochi.",
+#         lex_method=Lex_Methods.jaro_winkler,
+#     )
+# )
 
 
 # print(

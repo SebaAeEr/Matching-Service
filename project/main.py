@@ -15,6 +15,9 @@ from sqlalchemy.orm import Session
 from listener import Listener
 import json
 import requests
+from pydantic import BaseModel
+import urllib.parse
+import re
 
 
 correlator = FastAPI(docs_url="/ad_doc", redoc_url="/ad_redoc")
@@ -24,8 +27,14 @@ callback_message = ""
 callback_rule = ""
 
 
+class MessageMatch(BaseModel):
+    id: str
+    message: str
+    rules: list
+
+
 if __name__ == "__main__":
-    uvicorn.run(correlator, host="127.0.0.1", port=8000)
+    uvicorn.run(correlator, host="0.0.0.0", port=8000)
 
 
 def get_db():
@@ -34,6 +43,18 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def url_to_dict(body):
+    d = {}
+    fields = re.split("=|&", body[2:-1])
+    counter = 1
+    for key in fields[0::2]:
+        print(key)
+        print(fields[counter])
+        d[key] = json.loads(urllib.parse.unquote(fields[counter]))
+        counter += 2
+    return d
 
 
 @correlator.on_event("startup")
@@ -72,6 +93,13 @@ def add_feedback(
     headers = {"Content-Type": "application/json"}
     requests.request("PUT", callback_rule, headers=headers, data=payload)
     return
+
+
+@correlator.post("/add/matching")
+async def add_matching(request: Request):
+    # print(await request.body())
+    d = url_to_dict(str(await request.body()))
+    print(d)
 
 
 # return crud.add_Message(message, rule, db)

@@ -8,7 +8,7 @@ import os
 # print(result["text"])
 
 openai.api_key = os.getenv(
-    "CHAT_GPT_KEY", "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"
+    "CHAT_GPT_KEY", "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"
 )
 
 
@@ -28,7 +28,7 @@ def ask_chatgpt(string1, string2, model="gpt-3.5-turbo"):
     )
 
     print(response.choices[0].message)
-    return "yes" in response.choices[0].message
+    return "yes" in response.choices[0].message["content"].lower()
 
 
 def embedding_chatgpt(
