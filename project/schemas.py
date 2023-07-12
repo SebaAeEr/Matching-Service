@@ -5,9 +5,9 @@ import datetime as dt
 
 class Rule(BaseModel):
     listen_to: str
-    exclusiv: bool
-    message_type: str
-
+    callback: str
+    id: str
+    deletion_mode: str
 
 class MessageBase(BaseModel):
     id: str

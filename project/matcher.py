@@ -82,14 +82,15 @@ class Matcher(threading.Thread):
                     )
                 if match:
                     if found:
-                        d["rules"].append(rule)
+                        d["rules"].append(rule.dict())
                     else:
                         d = msg.dict()
-                        d["rules"] = [rule]
+                        d["rules"] = [rule.dict()]
                         found = True
             if d != {}:
                 result_list.append(d)
 
+        print(result_list)
         payload = json.dumps(result_list)
         print(payload)
         headers = {"Content-Type": "application/json"}

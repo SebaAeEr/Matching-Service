@@ -39,9 +39,10 @@ def clean_rules_msgs(f_results):
     f_msgs = []
     f_rules = []
     for match in f_results:
-        f_msgs.append(schemas.MessageBase(**match.dict()))
-        for rule in match.dict()["rules"]:
-            f_rules.append(rule)
+        f_msgs.append(schemas.MessageBase(**match))
+        for rule in match["rules"]:
+            if rule["deletion_mode"] == "single":
+                f_rules.append(schemas.Rule(**rule))
     rules = list(filter(lambda x: x not in f_rules, rules))
     messages = list(filter(lambda x: x not in f_msgs, messages))
 
@@ -63,6 +64,8 @@ def url_to_dict(body):
     fields = re.split("=|&", body[2:-1])
     counter = 1
     for key in fields[0::2]:
+        if fields[counter] == "":
+            fields[counter] = "%5B%5D"
         print(key)
         print(fields[counter])
         d[key] = json.loads(urllib.parse.unquote(fields[counter]))
@@ -131,4 +134,16 @@ def ask_chatgpt(response: Response, request: Request):
     callback = request.headers.get("Cpee-Callback")
     matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods.ask_chatgpt)
     matcher.start()
+    return
+
+
+@matcher.post("/delete/matches")
+async def delete_matches(request: Request):
+    global messages, rules
+    d = url_to_dict(str(await request.body()))
+    print(d)
+    for name in d:
+        clean_rules_msgs(d[name])
+    print("messages:" + str(messages))
+    print("rules: " + str(rules))
     return

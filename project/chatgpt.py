@@ -8,7 +8,7 @@ import os
 # print(result["text"])
 
 openai.api_key = os.getenv(
-    "CHAT_GPT_KEY", "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"
+    "CHAT_GPT_KEY", "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"
 )
 
 

@@ -48,10 +48,11 @@ def get_db():
 def url_to_dict(body):
     d = {}
     fields = re.split("=|&", body[2:-1])
+    print(fields)
     counter = 1
     for key in fields[0::2]:
-        print(key)
-        print(fields[counter])
+        if fields[counter] == "":
+            fields[counter] = "%5B%5D"
         d[key] = json.loads(urllib.parse.unquote(fields[counter]))
         counter += 2
     return d
