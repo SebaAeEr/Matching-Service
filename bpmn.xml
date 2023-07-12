@@ -4,10 +4,11 @@
     <ask_chatgpt_matchings>[]</ask_chatgpt_matchings>
     <embedding_matchings>[]</embedding_matchings>
     <lex_matchings>[]</lex_matchings>
-    <message>{"message":"I am Sebastian","id":"vpiQJZkskXHXztWCZ"}</message>
-    <phone_matchings>[]</phone_matchings>
+    <message>{"message":"i am max","id":"wRX6yyE4ngJSWLoeF"}</message>
+    <phone_matchings/>
+    <rule>{"listen_to":"my name is max","callback":"string","id":"string","deletion_mode":"single"}</rule>
     <result>[]</result>
-    <rule>{"listen_to":"My name is Sebastian","exclusiv":true,"message_type":"string"}</rule>
+    <messages>[]</messages>
   </dataelements>
   <endpoints>
     <add_msg>http://localhost:27182/add/message</add_msg>
@@ -21,6 +22,7 @@
     <match_phone_dist>http://localhost:27182/run/phone_dist</match_phone_dist>
     <match_embedding>http://localhost:27182/run/embedding</match_embedding>
     <match_ask_chatgpt>http://localhost:27182/run/ask_chatgpt</match_ask_chatgpt>
+    <delete_matches>http://localhost:27182/delete/matches</delete_matches>
   </endpoints>
   <attributes>
     <info>test</info>
@@ -309,6 +311,54 @@
                     </code>
                   </documentation>
                 </call>
+                <call id="a12" endpoint="delete_matches">
+                  <parameters>
+                    <label>delete_matches</label>
+                    <method>:post</method>
+                    <arguments>
+                      <ask_chatgpt>!data.ask_chatgpt_matchings</ask_chatgpt>
+                      <embedding>!data.embedding_matchings</embedding>
+                      <lex>!data.lex_matchings</lex>
+                      <phone>!data.phone_matchings</phone>
+                    </arguments>
+                  </parameters>
+                  <code>
+                    <prepare/>
+                    <finalize output="result"/>
+                    <update output="result"/>
+                    <rescue output="result"/>
+                  </code>
+                  <annotations>
+                    <_timing>
+                      <_timing_weight/>
+                      <_timing_avg/>
+                      <explanations/>
+                    </_timing>
+                    <_shifting>
+                      <_shifting_type>Duration</_shifting_type>
+                    </_shifting>
+                    <_context_data_analysis>
+                      <probes/>
+                      <ips/>
+                    </_context_data_analysis>
+                    <report>
+                      <url/>
+                    </report>
+                    <_notes>
+                      <_notes_general/>
+                    </_notes>
+                  </annotations>
+                  <documentation>
+                    <input/>
+                    <output/>
+                    <implementation>
+                      <description/>
+                    </implementation>
+                    <code>
+                      <description/>
+                    </code>
+                  </documentation>
+                </call>
               </alternative>
               <otherwise/>
             </choose>
@@ -329,7 +379,7 @@
               </parameters>
               <code>
                 <prepare/>
-                <finalize output="result">data.message = result</finalize>
+                <finalize output="result">data.messages &lt;&lt; result</finalize>
                 <update output="result"/>
                 <rescue output="result"/>
               </code>
@@ -426,7 +476,7 @@
               </parameters>
               <code>
                 <prepare/>
-                <finalize output="result">data.rule = result</finalize>
+                <finalize output="result">data.rules &lt;&lt; resut</finalize>
                 <update output="result"/>
                 <rescue output="result"/>
               </code>
