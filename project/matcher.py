@@ -46,10 +46,10 @@ class Matcher(threading.Thread):
         ask_chatpgt_model="gpt-3.5-turbo",
     ):
         result_list = []
-        for msg in self.messages:
+        for rule in self.rules:
             found = False
             d = {}
-            for rule in self.rules:
+            for msg in self.messages:
                 rule_string = rule.listen_to.lower()
                 mesg_string = msg.message.lower()
                 if self.matching_method == Matching_Methods.lex_dist:
@@ -82,10 +82,11 @@ class Matcher(threading.Thread):
                     )
                 if match:
                     if found:
-                        d["rules"].append(rule.dict())
+                        d["messages"].append(msg.dict())
                     else:
-                        d = msg.dict()
-                        d["rules"] = [rule.dict()]
+                        d = rule.dict()
+                        d["method"] = self.matching_method.name
+                        d["messages"] = [msg.dict()]
                         found = True
             if d != {}:
                 result_list.append(d)

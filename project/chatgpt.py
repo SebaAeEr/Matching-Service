@@ -7,9 +7,7 @@ import os
 # result = model.transcribe("currentVM.wav")
 # print(result["text"])
 
-openai.api_key = os.getenv(
-    "CHAT_GPT_KEY", "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"
-)
+openai.api_key = os.getenv("CHAT_GPT_KEY")
 
 
 def ask_chatgpt(string1, string2, model="gpt-3.5-turbo"):

@@ -18,6 +18,7 @@ import requests
 from pydantic import BaseModel
 import urllib.parse
 import re
+import uuid
 
 
 correlator = FastAPI(docs_url="/ad_doc", redoc_url="/ad_redoc")
@@ -25,12 +26,6 @@ models.Base.metadata.create_all(bind=engine)
 subs = None
 callback_message = ""
 callback_rule = ""
-
-
-class MessageMatch(BaseModel):
-    id: str
-    message: str
-    rules: list
 
 
 if __name__ == "__main__":
@@ -83,12 +78,12 @@ def test(response: Response, request: Request):
 
 
 @correlator.post("/add/rule")
-def add_feedback(
-    message: schemas.MessageBase,
-    rule: schemas.Rule,
-    db: Session = Depends(get_db),
-):
-    print(callback_rule)
+def add_feedback(rulebase: schemas.RuleBase):
+    rule = schemas.Rule(
+        **rulebase.dict(),
+        correlator_url="http://localhost:8000/add/matching",
+        id=str(uuid.uuid4())
+    )
     payload = json.dumps(rule.dict())
     print(payload)
     headers = {"Content-Type": "application/json"}
@@ -101,6 +96,3 @@ async def add_matching(request: Request):
     # print(await request.body())
     d = url_to_dict(str(await request.body()))
     print(d)
-
-
-# return crud.add_Message(message, rule, db)
