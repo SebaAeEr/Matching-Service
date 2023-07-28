@@ -19,5 +19,6 @@ class MessageBase(BaseModel):
     message: str
 
 
-class MessageMatches(MessageBase):
+class Matches(BaseModel):
+    message: str
     callback: str

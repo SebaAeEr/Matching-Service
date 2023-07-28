@@ -90,7 +90,8 @@ class Matcher(threading.Thread):
                     d = {
                         "callback": rule.callback,
                         "message": msg.message,
-                        "id": rule.id,
+                        "rule_id": rule.id,
+                        "msg_id": msg.id,
                     }
                     break
             if d != {}:
