@@ -32,18 +32,6 @@ async def print_request(request):
         print(f"request body         : {await request.body()}")
 
 
-def clean_rules_msgs(f_results):
-    f_msgs = []
-    f_rules = []
-    for match in f_results:
-        f_msgs.append(schemas.MessageBase(**match))
-        for rule in match["rules"]:
-            if rule["deletion_mode"] == "single":
-                f_rules.append(schemas.Rule(**rule))
-    rules = list(filter(lambda x: x not in f_rules, rules))
-    messages = list(filter(lambda x: x not in f_msgs, messages))
-
-
 if __name__ == "__main__":
     uvicorn.run(matcher, host="127.0.0.1", port=27182)
 
@@ -83,13 +71,4 @@ async def run_matching(response: Response, request: Request):
     callback = request.headers.get("Cpee-Callback")
     matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods[d["method"]])
     matcher.start()
-    return
-
-
-@matcher.post("/delete/matches")
-async def delete_matches(request: Request):
-    d = url_to_dict(str(await request.body()))
-    print(d)
-    for name in d:
-        clean_rules_msgs(d[name])
     return

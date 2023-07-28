@@ -20,4 +20,4 @@ class MessageBase(BaseModel):
 
 
 class MessageMatches(MessageBase):
-    rules: list
+    callback: str

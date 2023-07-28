@@ -1,12 +1,12 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
-    <messages>[{"message":"hello","id":"7BJn5SzfJovS8KRsG"}]</messages>
-    <safe_messages>[{"message":"hello","id":"7BJn5SzfJovS8KRsG"}]</safe_messages>
-    <safe_rules>[]</safe_rules>
-    <len_messages>1</len_messages>
-    <matching_results>[]</matching_results>
+    <len_messages>2</len_messages>
+    <safe_messages>[{"message":"hello","id":"4sY4qvSP7wQDCs2RG"},{"message":"my name is leon","id":"MQf4HAmsiHyc5f4hj"},{"message":"my name is max","id":"csbj2W7dwAnXoBPmy"}]</safe_messages>
     <len_rules>0</len_rules>
+    <safe_rules>[{"listen_to":"my name is Max","callback":"string","deletion_mode":"string","id":"96faee90-240c-412a-aa5c-6ccbd4173f94","correlator_url":"http://localhost:8000/add/matching"},{"listen_to":"my name is Max","callback":"string","deletion_mode":"string","id":"003a4ee1-9187-41d4-9714-57ed7591275b","correlator_url":"http://localhost:8000/add/matching"}]</safe_rules>
+    <matching_results>[]</matching_results>
+    <messages>[{"message":"hello","id":"4sY4qvSP7wQDCs2RG"},{"message":"my name is leon","id":"MQf4HAmsiHyc5f4hj"}]</messages>
     <rules>[]</rules>
     <result>[]</result>
   </dataelements>
@@ -247,6 +247,7 @@ data.len_rules = data.safe_rules.length()</manipulate>
                 </choose>
                 <choose mode="exclusive">
                   <alternative condition="data.matching_results.size &gt; 0">
+                    <manipulate id="a12" label="match cleaning (no duplicates)">data.matching_results = data.matching_results.uniq{|match| match["id"]}</manipulate>
                     <_probability>
                       <_probability_min/>
                       <_probability_max/>
@@ -300,22 +301,21 @@ data.len_rules = data.safe_rules.length()</manipulate>
                     <manipulate id="a11" label="rule and message deletion">count_msg_deletion = 0
 count_rule_deletion = 0
 
-data.matching_results.each { |match|
-  match["messages"].each { |match_msg|    id = match_msg["id"]
-    data.messages.each_with_index{ |msg, index|
-      if msg["id"] == id
-        data.messages.delete_at(index)
-        count_msg_deletion += 1
-      end
-    }
 
-  }
-  data.rules.each_with_index{ |rule, index|
-    if rule["id"] == match["id"]
-      data.rules.delete_at(index)
-      count_rule_deletion += 1
-    end
-  }
+data.matching_results.each { |match|
+  msg_index = data.messages.find_index{|msg| msg["message"] == match["message"]}
+  if msg_index
+    data.messages.delete_at(msg_index)
+    count_msg_deletion += 1
+  end
+
+
+
+  rule_index = data.rules.find_index{|rule| rule["id"] == match["id"]} 
+  if rule_index
+    data.rules.delete_at(rule_index )
+    count_rule_deletion += 1
+  end
 }
 
 data.len_messages -= count_msg_deletion
