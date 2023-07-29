@@ -2,15 +2,15 @@ import openai
 import numpy as np
 import os
 
-
-# model = whisper.load_model("medium.en")
-# result = model.transcribe("currentVM.wav")
-# print(result["text"])
-
 openai.api_key = os.getenv("CHAT_GPT_KEY")
 
 
 def ask_chatgpt(string1, string2, model="gpt-3.5-turbo"):
+    """
+    Write the question 'Do the following strings convey similar information? "phrase 1" and "phrase 2". Please answer with only yes or no.' to chatgpt.
+    Returns boolean if the answer is 'yes'.
+    """
+
     response = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -32,6 +32,11 @@ def ask_chatgpt(string1, string2, model="gpt-3.5-turbo"):
 def embedding_chatgpt(
     string1, string2, model="text-similarity-davinci-001", threshold=0.1
 ):
+    """
+    Calculate the distance of the vectors representing the strings using openai.
+    Returns if the distance is lower than the given threshold.
+    """
+
     embedding1 = openai.Embedding.create(input=string1, model=model)["data"][0][
         "embedding"
     ]
@@ -42,7 +47,3 @@ def embedding_chatgpt(
 
     dist = np.linalg.norm(np.array(embedding1) - np.array(embedding2))
     return dist <= threshold
-
-
-# ask_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")
-# embedding_chatgpt("Hello I am Sebastian.", "Hello my name is Sebastian.")

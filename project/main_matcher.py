@@ -1,28 +1,19 @@
 from fastapi import Body, FastAPI, Form, Request, Depends, Header, Response
-from fastapi.responses import JSONResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 import uvicorn
-
-import models
-from database import SessionLocal, engine
-from pydantic import BaseModel
 import urllib.parse
 import json
-import string_dist
 import schemas
 import re
-import chatgpt
-from enum import Enum
 import matcher as m
 
 
 matcher = FastAPI(docs_url="/ad_doc", redoc_url="/ad_redoc")
-models.Base.metadata.create_all(bind=engine)
-subs = None
+thread_counter = 0
 
 
 async def print_request(request):
+    """Print full requests for debugging"""
+
     print(f"request header       : {dict(request.headers.items())}")
     print(f"request query params : {dict(request.query_params.items())}")
     try:
@@ -36,23 +27,16 @@ if __name__ == "__main__":
     uvicorn.run(matcher, host="127.0.0.1", port=27182)
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 def url_to_dict(body):
+    """Takes body of request from cpee and turns it in a dictionary."""
+
     d = {}
     fields = re.split("=|&", body[2:-1])
     counter = 1
     for key in fields[0::2]:
+        # place empty brackets in value field if it is empty
         if fields[counter] == "":
             fields[counter] = "%5B%5D"
-        print(key)
-        print(fields[counter])
         try:
             d[key] = json.loads(urllib.parse.unquote(fields[counter]))
         except:
@@ -63,12 +47,22 @@ def url_to_dict(body):
 
 @matcher.post("/run/matching")
 async def run_matching(response: Response, request: Request):
-    print_request(request)
+    """
+    Create thread to run the specific matching method with request body:
+    messages: []
+    rules: []
+    method: str
+    """
+
+    global thread_counter
     d = url_to_dict(str(await request.body()))
     messages = list(map(lambda x: schemas.MessageBase(**x), d["messages"]))
     rules = list(map(lambda x: schemas.Rule(**x), d["rules"]))
     response.headers["CPEE-CALLBACK"] = "true"
     callback = request.headers.get("Cpee-Callback")
-    matcher = m.Matcher(1, callback, rules, messages, m.Matching_Methods[d["method"]])
+    matcher = m.Matcher(
+        thread_counter, callback, rules, messages, m.Matching_Methods[d["method"]]
+    )
+    thread_counter += 1
     matcher.start()
     return
