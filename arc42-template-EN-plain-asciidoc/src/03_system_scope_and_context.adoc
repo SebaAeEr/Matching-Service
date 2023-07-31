@@ -1,0 +1,20 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-system-scope-and-context]]
+== System Scope and Context
+
+=== Technical Context
+image::interface.drawio.png["Technical Context"]
+
+The data objects must have the following properties (this is the bare minimum, for additional functionality more properties can be added):
+[options="header",cols="1,2"]
+|===
+|Object|Properties
+| Rule | *listen_to* (String): Phrase or keywords on which the rule will be matched with the messages. +
+*callback* (String): Callback-url the matched message will be send to. +
+*id* (String): Unique identifier of the rule. +
+| Message | *message* (String): Body of the message. +
+*id* (String): Unique identifier of the message. +
+| Matching result | *message* (String): Body of the message that was matched with the rule. +
+*callback* (String): Callback-url the matched message will be send to. +
+|===

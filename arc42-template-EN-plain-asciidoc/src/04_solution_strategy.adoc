@@ -1,0 +1,7 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-solution-strategy]]
+== Solution Strategy
+The service has a service-oriented architecture implemented with workflow execution engine Cpee as the Orchestrator of subservices. All matching related tasks are implemented on a Python server, other tasks mainly related to data management are implemented with Ruby scripts directly inside Cpee. By using a workflow execution enginge the service is uncomplicated to configure as we can offer a UI with an interactive BPMN diagram in which the user can build his own setup. Additionally we can simply add functionality in form of subservices which than can be called from Cpee. We also achieve a high transperancy as users can watch through the UI of Cpee which tasks are executed and what data is stored.
+
+
