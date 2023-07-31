@@ -6,12 +6,10 @@ import datetime as dt
 class RuleBase(BaseModel):
     listen_to: str
     callback: str
-    deletion_mode: str
 
 
 class Rule(RuleBase):
     id: str
-    correlator_url: str
 
 
 class MessageBase(BaseModel):
