@@ -1,0 +1,29 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-introduction-and-goals]]
+== Introduction and Goals
+This document describes the Matching Service, which is used by correlators to match rules with messages. In order to also match faulty messages (e.g. Voice-Messages which are transcribed) with the best rule, this service offers multiple matching methods like phonetic, lexicographic or ML algorithms using openai. For each correlator a new instance of this service should be easily initialized, configured and even upgraded to match the different use cases of the correlator.
+// as it is implemented service-oriented architecture implemented with Cpee this service is easily upgradeable with more functionality and configurable even by untrained users in order to meet different use cases.
+
+
+=== Requirements Overview
+[options="header",cols="1,2"]
+|===
+|Functional Requirement|Explanation
+| Matching |
+| Data retrieval | Creating connections with the correlator in order to retrieve new messages and rules.
+| Data deletion | Deletion of already matched messages or rules.
+| Data storing | 
+| Sending back matching results | 
+| Combining matching-results | Combining the matching results of multiple methods and deleting duplicate matches to the same rule.
+|===
+
+=== Quality Goal
+[options="header",cols="1,2"]
+|===
+|Quality Goal|Explanation
+| Configurability | Ease of configurability of the service by the user for different correlators and use cases.
+| Upgradeability | Ease of upgradeability of the service to add more functionality like new matching methods or more complex deletion schemes.
+| Performance | The service should return results in a reasonable time (max. few seconds) as soon as new data comes in.
+| Transparency | Ease of understanding, seeing and testing the service and it's underlying data flows.
+|===

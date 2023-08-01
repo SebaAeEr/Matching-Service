@@ -1,0 +1,13 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-technical-risks]]
+== Risks and Technical Debts
+* The performance may suffer with large amounts of rules and messages, as the matching will always be run on the whole dataset as soon as only one entry is added. Consequently, the latency (the time between the addition of data and getting back the matching results) for the correlator may be very high.
+* Data is only temporarily stored on the Cpee engine as soon as there is a failure on the Cpee engine it could be that the data is lost with no possibility to recover it. 
+
+== Possible Ugrades
+* Performance optimizations (e.g. by only matching new rules and new messages), as currently all messages and rules are matched as soon as new data comes in
+* More intricate deletion scheme for rules and messages (e.g. deletion after time limit, a limit of matchings or never)
+* Better filtering of matching results (e.g only taking the best matches), as currently the first match is always the winner
+* More matching methods
+* A more configurable unifying process of matching results from different methods (e.g. possibility of prioritizing specific matching methods)

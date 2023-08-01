@@ -1,0 +1,22 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-runtime-view]]
+== Runtime View
+The following figure is a redrawing of the BPMN-diagram used in the Cpee Engine:
+
+image::diagram.svg[BPMN, 320, 134]
+<<<
+
+
+=== Example: A new rule gets inserted
+
+
+* The service call that established the asynchronous connection with the Correlator receives a new rule and pushes it to the back of the rule list in the local storage of the Cpee engine.
+* The matcher thread recognizes that the length of the rule list changed and starts the matching process:
+. It freezes the current rule and message list in a new variable.
+. It calls the matching server with the frozen data to start a matching with the phonetical method.
+. It calls the matching server with the frozen data to start a matching with the lexicographical method.
+. If there are matching results, they get cleaned up by deleting duplicate matches with the same rule.
+. For each match the callback-url of the rule and the message-body of the message are sent as tuples to the correlator.
+. Rules and messages found in the matching result are deleted from the rule and message list.
+. The new length of the rule and message list are calculated to recognize new changes to the lists.

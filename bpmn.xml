@@ -1,30 +1,21 @@
 <testset xmlns="http://cpee.org/ns/properties/2.0">
   <executionhandler>ruby</executionhandler>
   <dataelements>
-    <len_messages>2</len_messages>
-    <safe_messages>[{"message":"my name is leon","id":"MQf4HAmsiHyc5f4hj"},{"message":"hello","id":"XKduCSmY6kFJyLNqY"},{"message":"hello","id":"3nL5rZtHmXwyreq7E"}]</safe_messages>
+    <len_messages>0</len_messages>
+    <safe_messages>[]</safe_messages>
     <len_rules>0</len_rules>
-    <return_data>[{"callback":"string","message":"hello"},{"callback":"string","message":"hello"},{"callback":"string","message":"hello"}]</return_data>
-    <safe_rules>[{"listen_to":"hello","callback":"string","deletion_mode":"string","id":"684067dd-ef77-4894-a4cb-65f32ce65a6b","correlator_url":"http://localhost:8000/add/matching"},{"listen_to":"hello","callback":"string","deletion_mode":"string","id":"cd87c2e8-d55f-4003-8b76-96684650dccb","correlator_url":"http://localhost:8000/add/matching"}]</safe_rules>
+    <return_data>[]</return_data>
+    <safe_rules>[]</safe_rules>
     <matching_results>[]</matching_results>
-    <messages>[{"message":"my name is leon","id":"MQf4HAmsiHyc5f4hj"},{"message":"hello","id":"3nL5rZtHmXwyreq7E"}]</messages>
+    <messages>[]</messages>
     <rules>[]</rules>
-    <result>[]</result>
   </dataelements>
   <endpoints>
-    <add_msg>http://localhost:27182/add/message</add_msg>
     <timeout>http://gruppe.wst.univie.ac.at/~mangler/services/timeout.php</timeout>
     <messages>http://localhost:8000/listen/messages</messages>
     <rules>http://localhost:8000/listen/rules</rules>
     <run_matching>http://localhost:27182/run/matching</run_matching>
     <add_matching>http://localhost:8000/add/matching</add_matching>
-    <add_rule>http://localhost:27182/add/rule</add_rule>
-    <add_message>http://localhost:27182/add/message</add_message>
-    <match_lex_dist>http://localhost:27182/run/lex_dist</match_lex_dist>
-    <match_phone_dist>http://localhost:27182/run/phone_dist</match_phone_dist>
-    <match_embedding>http://localhost:27182/run/embedding</match_embedding>
-    <match_ask_chatgpt>http://localhost:27182/run/ask_chatgpt</match_ask_chatgpt>
-    <delete_matches>http://localhost:27182/delete/matches</delete_matches>
   </endpoints>
   <attributes>
     <info>test</info>
@@ -38,7 +29,9 @@
           <loop mode="pre_test" condition="true">
             <choose mode="exclusive">
               <alternative condition="data.messages.length() != data.len_messages || data.rules.length != data.len_rules">
-                <manipulate id="a10" label="safe data und change len">data.safe_messages = []
+                <manipulate id="a10" label="safe data und change len"># copy data from messages and rules into safe lists to freeze the current data and adjust new list lengths
+
+data.safe_messages = []
 data.safe_rules = []
 
 data.messages.each{|msg| data.safe_messages &lt;&lt; msg.dup}
@@ -46,214 +39,225 @@ data.rules.each{|rule| data.safe_rules &lt;&lt; rule.dup}
 
 data.len_messages = data.safe_messages.length()
 data.len_rules = data.safe_rules.length()</manipulate>
-                <_probability>
-                  <_probability_min/>
-                  <_probability_max/>
-                  <_probability_avg/>
-                </_probability>
-                <call id="a8" endpoint="run_matching">
-                  <parameters>
-                    <label>match_lex_dist</label>
-                    <method>:post</method>
-                    <arguments>
-                      <messages>!data.safe_messages</messages>
-                      <rules>!data.safe_rules</rules>
-                      <method>lex_dist</method>
-                    </arguments>
-                  </parameters>
-                  <code>
-                    <prepare/>
-                    <finalize output="result">data.matching_results.push(*result)</finalize>
-                    <update output="result"/>
-                    <rescue output="result"/>
-                  </code>
-                  <annotations>
-                    <_timing>
-                      <_timing_weight/>
-                      <_timing_avg/>
-                      <explanations/>
-                    </_timing>
-                    <_shifting>
-                      <_shifting_type>Duration</_shifting_type>
-                    </_shifting>
-                    <_context_data_analysis>
-                      <probes/>
-                      <ips/>
-                    </_context_data_analysis>
-                    <report>
-                      <url/>
-                    </report>
-                    <_notes>
-                      <_notes_general/>
-                    </_notes>
-                  </annotations>
-                  <documentation>
-                    <input/>
-                    <output/>
-                    <implementation>
-                      <description/>
-                    </implementation>
-                    <code>
-                      <description/>
-                    </code>
-                  </documentation>
-                </call>
-                <call id="a6" endpoint="run_matching">
-                  <parameters>
-                    <label>match_phone_dist</label>
-                    <method>:post</method>
-                    <arguments>
-                      <messages>!data.safe_messages</messages>
-                      <rules>!data.safe_rules</rules>
-                      <method>phone_dist</method>
-                    </arguments>
-                  </parameters>
-                  <code>
-                    <prepare/>
-                    <finalize output="result">data.matching_results.push(*result)</finalize>
-                    <update output="result"/>
-                    <rescue output="result"/>
-                  </code>
-                  <annotations>
-                    <_timing>
-                      <_timing_weight/>
-                      <_timing_avg/>
-                      <explanations/>
-                    </_timing>
-                    <_shifting>
-                      <_shifting_type>Duration</_shifting_type>
-                    </_shifting>
-                    <_context_data_analysis>
-                      <probes/>
-                      <ips/>
-                    </_context_data_analysis>
-                    <report>
-                      <url/>
-                    </report>
-                    <_notes>
-                      <_notes_general/>
-                    </_notes>
-                  </annotations>
-                  <documentation>
-                    <input/>
-                    <output/>
-                    <implementation>
-                      <description/>
-                    </implementation>
-                    <code>
-                      <description/>
-                    </code>
-                  </documentation>
-                </call>
-                <choose mode="exclusive">
-                  <alternative condition="false">
-                    <call id="a2" endpoint="run_matching">
-                      <parameters>
-                        <label>match_embedding</label>
-                        <method>:post</method>
-                        <arguments>
-                          <messages>!data.safe_messages</messages>
-                          <rules>!data.safe_rules</rules>
-                          <method>embedding</method>
-                        </arguments>
-                      </parameters>
-                      <code>
-                        <prepare/>
-                        <finalize output="result">data.matching_results.push(*result)</finalize>
-                        <update output="result"/>
-                        <rescue output="result"/>
-                      </code>
-                      <annotations>
-                        <_timing>
-                          <_timing_weight/>
-                          <_timing_avg/>
-                          <explanations/>
-                        </_timing>
-                        <_shifting>
-                          <_shifting_type>Duration</_shifting_type>
-                        </_shifting>
-                        <_context_data_analysis>
-                          <probes/>
-                          <ips/>
-                        </_context_data_analysis>
-                        <report>
-                          <url/>
-                        </report>
-                        <_notes>
-                          <_notes_general/>
-                        </_notes>
-                      </annotations>
-                      <documentation>
-                        <input/>
-                        <output/>
-                        <implementation>
-                          <description/>
-                        </implementation>
-                        <code>
-                          <description/>
-                        </code>
-                      </documentation>
-                    </call>
-                    <call id="a3" endpoint="run_matching">
-                      <parameters>
-                        <label>match_ask_chatgpt</label>
-                        <method>:post</method>
-                        <arguments>
-                          <messages>!data.safe_messages</messages>
-                          <rules>!data.safe_rules</rules>
-                          <method>ask_chatgpt</method>
-                        </arguments>
-                      </parameters>
-                      <code>
-                        <prepare/>
-                        <finalize output="result">data.matching_results.push(*result)</finalize>
-                        <update output="result"/>
-                        <rescue output="result"/>
-                      </code>
-                      <annotations>
-                        <_timing>
-                          <_timing_weight/>
-                          <_timing_avg/>
-                          <explanations/>
-                        </_timing>
-                        <_shifting>
-                          <_shifting_type>Duration</_shifting_type>
-                        </_shifting>
-                        <_context_data_analysis>
-                          <probes/>
-                          <ips/>
-                        </_context_data_analysis>
-                        <report>
-                          <url/>
-                        </report>
-                        <_notes>
-                          <_notes_general/>
-                        </_notes>
-                      </annotations>
-                      <documentation>
-                        <input/>
-                        <output/>
-                        <implementation>
-                          <description/>
-                        </implementation>
-                        <code>
-                          <description/>
-                        </code>
-                      </documentation>
-                    </call>
+                <parallel wait="-1" cancel="last">
+                  <parallel_branch pass="" local="">
                     <_probability>
                       <_probability_min/>
                       <_probability_max/>
                       <_probability_avg/>
                     </_probability>
-                  </alternative>
-                  <otherwise/>
-                </choose>
+                    <call id="a8" endpoint="run_matching">
+                      <parameters>
+                        <label>match_lex_dist</label>
+                        <method>:post</method>
+                        <arguments>
+                          <messages>!data.safe_messages</messages>
+                          <rules>!data.safe_rules</rules>
+                          <method>lex_dist</method>
+                        </arguments>
+                      </parameters>
+                      <code>
+                        <prepare/>
+                        <finalize output="result">data.matching_results.push(*result)</finalize>
+                        <update output="result"/>
+                        <rescue output="result"/>
+                      </code>
+                      <annotations>
+                        <_timing>
+                          <_timing_weight/>
+                          <_timing_avg/>
+                          <explanations/>
+                        </_timing>
+                        <_shifting>
+                          <_shifting_type>Duration</_shifting_type>
+                        </_shifting>
+                        <_context_data_analysis>
+                          <probes/>
+                          <ips/>
+                        </_context_data_analysis>
+                        <report>
+                          <url/>
+                        </report>
+                        <_notes>
+                          <_notes_general/>
+                        </_notes>
+                      </annotations>
+                      <documentation>
+                        <input/>
+                        <output/>
+                        <implementation>
+                          <description/>
+                        </implementation>
+                        <code>
+                          <description/>
+                        </code>
+                      </documentation>
+                    </call>
+                  </parallel_branch>
+                  <parallel_branch pass="" local="">
+                    <call id="a6" endpoint="run_matching">
+                      <parameters>
+                        <label>match_phone_dist</label>
+                        <method>:post</method>
+                        <arguments>
+                          <messages>!data.safe_messages</messages>
+                          <rules>!data.safe_rules</rules>
+                          <method>phone_dist</method>
+                        </arguments>
+                      </parameters>
+                      <code>
+                        <prepare/>
+                        <finalize output="result">data.matching_results.push(*result)</finalize>
+                        <update output="result"/>
+                        <rescue output="result"/>
+                      </code>
+                      <annotations>
+                        <_timing>
+                          <_timing_weight/>
+                          <_timing_avg/>
+                          <explanations/>
+                        </_timing>
+                        <_shifting>
+                          <_shifting_type>Duration</_shifting_type>
+                        </_shifting>
+                        <_context_data_analysis>
+                          <probes/>
+                          <ips/>
+                        </_context_data_analysis>
+                        <report>
+                          <url/>
+                        </report>
+                        <_notes>
+                          <_notes_general/>
+                        </_notes>
+                      </annotations>
+                      <documentation>
+                        <input/>
+                        <output/>
+                        <implementation>
+                          <description/>
+                        </implementation>
+                        <code>
+                          <description/>
+                        </code>
+                      </documentation>
+                    </call>
+                  </parallel_branch>
+                  <parallel_branch pass="" local="">
+                    <choose mode="exclusive">
+                      <alternative condition="false">
+                        <call id="a2" endpoint="run_matching">
+                          <parameters>
+                            <label>match_embedding</label>
+                            <method>:post</method>
+                            <arguments>
+                              <messages>!data.safe_messages</messages>
+                              <rules>!data.safe_rules</rules>
+                              <method>embedding</method>
+                            </arguments>
+                          </parameters>
+                          <code>
+                            <prepare/>
+                            <finalize output="result">data.matching_results.push(*result)</finalize>
+                            <update output="result"/>
+                            <rescue output="result"/>
+                          </code>
+                          <annotations>
+                            <_timing>
+                              <_timing_weight/>
+                              <_timing_avg/>
+                              <explanations/>
+                            </_timing>
+                            <_shifting>
+                              <_shifting_type>Duration</_shifting_type>
+                            </_shifting>
+                            <_context_data_analysis>
+                              <probes/>
+                              <ips/>
+                            </_context_data_analysis>
+                            <report>
+                              <url/>
+                            </report>
+                            <_notes>
+                              <_notes_general/>
+                            </_notes>
+                          </annotations>
+                          <documentation>
+                            <input/>
+                            <output/>
+                            <implementation>
+                              <description/>
+                            </implementation>
+                            <code>
+                              <description/>
+                            </code>
+                          </documentation>
+                        </call>
+                        <call id="a3" endpoint="run_matching">
+                          <parameters>
+                            <label>match_ask_chatgpt</label>
+                            <method>:post</method>
+                            <arguments>
+                              <messages>!data.safe_messages</messages>
+                              <rules>!data.safe_rules</rules>
+                              <method>ask_chatgpt</method>
+                            </arguments>
+                          </parameters>
+                          <code>
+                            <prepare/>
+                            <finalize output="result">data.matching_results.push(*result)</finalize>
+                            <update output="result"/>
+                            <rescue output="result"/>
+                          </code>
+                          <annotations>
+                            <_timing>
+                              <_timing_weight/>
+                              <_timing_avg/>
+                              <explanations/>
+                            </_timing>
+                            <_shifting>
+                              <_shifting_type>Duration</_shifting_type>
+                            </_shifting>
+                            <_context_data_analysis>
+                              <probes/>
+                              <ips/>
+                            </_context_data_analysis>
+                            <report>
+                              <url/>
+                            </report>
+                            <_notes>
+                              <_notes_general/>
+                            </_notes>
+                          </annotations>
+                          <documentation>
+                            <input/>
+                            <output/>
+                            <implementation>
+                              <description/>
+                            </implementation>
+                            <code>
+                              <description/>
+                            </code>
+                          </documentation>
+                        </call>
+                        <_probability>
+                          <_probability_min/>
+                          <_probability_max/>
+                          <_probability_avg/>
+                        </_probability>
+                      </alternative>
+                      <otherwise/>
+                    </choose>
+                  </parallel_branch>
+                </parallel>
                 <choose mode="exclusive">
                   <alternative condition="data.matching_results.size &gt; 0">
-                    <manipulate id="a12" label="match cleaning (no duplicates)">data.matching_results = data.matching_results.uniq{|match| match["rule_id"]}
+                    <manipulate id="a12" label="match cleaning (no duplicates)">#Clean data by deleting all entries with duplicate rule_ids. Copy matching results to return_data and remove rule_id and msg_id to have clean data to return to correlator.
+
+data.matching_results = data.matching_results.uniq{|match| match["rule_id"]}
+data.return_data = []
 data.matching_results.each{|match| data.return_data &lt;&lt; match.dup}
-data.return_data.map{|match| 
+data.return_data.each{|match| 
   match.delete("rule_id")
   match.delete("msg_id")
 }</manipulate>
@@ -267,7 +271,7 @@ data.return_data.map{|match|
                         <label>return matching</label>
                         <method>:post</method>
                         <arguments>
-                          <matching_results>!data.matching_results</matching_results>
+                          <matching_results>!data.return_data</matching_results>
                         </arguments>
                       </parameters>
                       <code>
@@ -307,7 +311,9 @@ data.return_data.map{|match|
                         </code>
                       </documentation>
                     </call>
-                    <manipulate id="a11" label="rule and message deletion">count_msg_deletion = 0
+                    <manipulate id="a11" label="rule and message deletion"># delete all message entries and rules found in the matching results. Count deletions and calculate new length of message and rule list.
+
+count_msg_deletion = 0
 
 data.matching_results.each { |match|
   msg_index = data.messages.find_index{|msg| msg["id"] == match["msg_id"]}

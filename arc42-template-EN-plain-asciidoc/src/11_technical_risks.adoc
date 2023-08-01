@@ -1,7 +1,0 @@
-ifndef::imagesdir[:imagesdir: ../images]
-
-[[section-technical-risks]]
-== Risks and Technical Debts
-* The performance may suffer for high amounts of rules and messages, as the matching will always be run on the whole dataset as soon as only one entry is added. With that the latency (time between addition of data and getting back matching results) for the correlator may be very high.
-* Data is only temporarly stored on the Cpee engine as soon as there is a failure on the Cpee engine it could be that the data is lost with no possibility to recover it. 
-

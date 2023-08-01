@@ -2,7 +2,8 @@ import openai
 import numpy as np
 import os
 
-openai.api_key = os.getenv("CHAT_GPT_KEY")
+chat_gpt_key = ""
+openai.api_key = os.getenv("CHAT_GPT_KEY", chat_gpt_key)
 
 
 def ask_chatgpt(string1, string2, model="gpt-3.5-turbo"):

@@ -1,0 +1,6 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-glossary]]
+== Links
+* Github project: https://github.com/SebaAeEr/RCCorrelator
+* Cpee: https://cpee.org/

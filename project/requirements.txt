@@ -4,13 +4,8 @@ regex==2022.3.2
 rocketchat_API==1.30.0
 requests==2.26.0
 pydantic==1.10.8
-SQLAlchemy==1.4.41
-alembic==1.8.1
-sqlparse==0.4.2
 rocketchat-async==1.1.0
-flower==1.2.0
 redis==3.5.3
-celery==5.2.2
 openai==0.27.8
 numpy==1.24.0
 levenshtein==0.21.1

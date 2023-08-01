@@ -20,11 +20,11 @@ Matching Server::
 is a Python server responsible for implementing and initiating matching instances with different matching methods.
 
 Correlator::
-receives rules and listens to messages from a messaging service. Whenever new data comes in it sends them to the Matcher Service and returns the matching results back to their individual callbacks.
+receives rules and listens to messages from a messaging service. Whenever new data comes in, it sends them to the Matcher Service and returns the matching results to their individual callbacks.
 
 Important Interfaces::
 *run matching* +
-This interface enables the Cpee engine to specify the matching method and to send all the needed data to the Matcher.
+enables the Cpee engine to specify the matching method and to send all the needed data to the Matching Server.
 
 === Level 2
 
@@ -33,16 +33,16 @@ The following figure shows the internal structure of the Matching Server and the
 image::level2.drawio.png["Building Blocks"]
 
 Listener Rules::
-manages asnycronous connection with Correlator and saves new rules to the temporary storage of the Cpee Engine.
+manages asyncronous connection with Correlator and saves new rules to the temporary storage of the Cpee Engine.
 
 Listener Messages::
-manages asnycronous connection with Correlator and saves new messages to the temporary storage of the Cpee Engine.
+manages asyncronous connection with Correlator and saves new messages to the temporary storage of the Cpee Engine.
 
 Matching::
-is the core piece of the Cpee Engine. When changes in the data are recogniced the Matching Server will be called, the matching results will be combined and send to the Correlator and lastly rules and messages in the matching results will be deleted from the temporary storage.
+is the core piece of the Cpee Engine. When changes in the data are recognized, the Matching Server is called. The resulting matching results are combined and sent to the Correlator. Lastly, rules and messages in the matching results are deleted from the temporary storage.
 
 Uvicorn Server::
 offers the interface for the Cpee Engine to send the needed data to start a Matcher.
 
 Matcher::
-matches the rules and the messages with the given method and returns the result back to the Cpee Engine.
+matches the rules and the messages with the given method and returns the results to the Cpee Engine.

@@ -18,6 +18,8 @@ class Listener(threading.Thread):
     """Listener connects to RC server and listens to all messages send."""
 
     rc = asnc_rc()
+    usr_name = ""
+    password = ""
 
     def __init__(self, threadID):
         """Load model base.en."""
@@ -25,6 +27,7 @@ class Listener(threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.model = whisper.load_model("base.en")
+        self.old_msg_id = 0
 
     def handle_message(self, channel_id, sender_id, msg_id, thread_id, msg, qualifier):
         """Take message if it is a voicemessage transcribe it with transcribe_vmessage and send it with send_message to callback url."""
@@ -41,8 +44,8 @@ class Listener(threading.Thread):
 
         with sessions.Session() as session:
             rocket = rc_api(
-                os.getenv("RC_NAME"),
-                os.getenv("RC_PASSWORD"),
+                os.getenv("RC_NAME", self.usr_name),
+                os.getenv("RC_PASSWORD", self.password),
                 server_url="https://" + os.getenv("RC_SERVER_URL", "chat.tum.de"),
                 session=session,
             )
@@ -94,7 +97,7 @@ class Listener(threading.Thread):
         asyncio.run(
             self.listen(
                 "wss://" + os.getenv("RC_SERVER_URL", "chat.tum.de") + "/websocket",
-                os.getenv("RC_NAME"),
-                os.getenv("RC_PASSWORD"),
+                os.getenv("RC_NAME", self.usr_name),
+                os.getenv("RC_PASSWORD", self.password),
             )
         )
