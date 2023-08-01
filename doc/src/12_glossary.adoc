@@ -2,5 +2,5 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-glossary]]
 == Links
-* Github project: https://github.com/SebaAeEr/RCCorrelator
+* Github project: https://github.com/SebaAeEr/Matching-Service
 * Cpee: https://cpee.org/
