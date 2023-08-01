@@ -20,6 +20,7 @@ class Listener(threading.Thread):
     rc = asnc_rc()
     usr_name = ""
     password = ""
+    server_url = "chat.tum.de"
 
     def __init__(self, threadID):
         """Load model base.en."""
@@ -46,7 +47,7 @@ class Listener(threading.Thread):
             rocket = rc_api(
                 os.getenv("RC_NAME", self.usr_name),
                 os.getenv("RC_PASSWORD", self.password),
-                server_url="https://" + os.getenv("RC_SERVER_URL", "chat.tum.de"),
+                server_url="https://" + self.server_url,
                 session=session,
             )
             files = rocket.channels_files(
@@ -59,7 +60,7 @@ class Listener(threading.Thread):
 
             # if the voicemessage is older than 3 seconds something went wrong and we ignore it.
             if diff < datetime.timedelta(0, 3):
-                urls = file["url"].replace("https://chat.tum.de", "").split("/")
+                urls = file["url"].replace("https://" + self.server_url, "").split("/")
                 api_path = "/".join(urls[0:-1]) + "/"
                 method = urls[-1]
                 r = rocket.call_api_get(method, api_path)
@@ -96,7 +97,7 @@ class Listener(threading.Thread):
 
         asyncio.run(
             self.listen(
-                "wss://" + os.getenv("RC_SERVER_URL", "chat.tum.de") + "/websocket",
+                "wss://" +  self.server_url + "/websocket",
                 os.getenv("RC_NAME", self.usr_name),
                 os.getenv("RC_PASSWORD", self.password),
             )
